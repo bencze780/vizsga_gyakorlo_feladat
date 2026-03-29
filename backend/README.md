@@ -1,0 +1,410 @@
+# 🔧 Backend API - ÉpítészArchívum
+
+Express.js szerver a ÉpítészArchívum alkalmazáshoz. Kezeli az adatbázis műveleti és képfeltöltéseket.
+
+---
+
+## 📦 Technológiák
+
+| Csomag | Verzió | Cél |
+|--------|--------|-----|
+| `express` | ^5.2.1 | Web szerver és routing |
+| `mysql2` | ^3.20.0 | MySQL adatbázis kapcsolat |
+| `cors` | ^2.8.6 | Cross-Origin Resource Sharing |
+| `multer` | ^2.1.1 | Képfeltöltés kezelése |
+| `nodemon` | ^3.1.14 | Automatikus szerver újraindítás (fejlesztéshez) |
+
+---
+
+## 🚀 Indítás
+
+```bash
+# Backend mappába lépés
+cd backend
+
+# Függőségek telepítése
+npm install
+
+# Szerver indítása
+npm start
+
+# Szerver elérhető: http://localhost:3333
+```
+
+### Fejlesztésben nodemon-nel
+
+```bash
+npx nodemon server.js
+```
+
+---
+
+## ⚙️ Beállítások
+
+### Adatbázis Kapcsolat (`server.js`)
+
+```javascript
+const db = mysql.createPool({
+    host: 'localhost',
+    port: 3307,           // MAMP-ban 3307, XAMPP-ban 3306
+    user: 'root',
+    password: 'root',     // Jelszó beállítása
+    database: 'epiteszet'
+});
+```
+
+### Multer Képfeltöltés
+
+```javascript
+const upload = multer({ 
+    storage: storage, 
+    fileFilter: fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 }  // Max 5MB
+});
+```
+
+---
+
+## 📡 API Végpontok
+
+### 1️⃣ **Épületek Lekérése**
+
+```
+GET /api/epuletek
+```
+
+**Leírás**: Az összes épület az építész nevével
+
+**Válasz**:
+```json
+[
+  {
+    "id": 1,
+    "nev": "Országház",
+    "varos": "Budapest",
+    "epult": 1904,
+    "kep_url": null,
+    "epitesz_neve": "Steindl Imre",
+    "epitesz_id": 1
+  }
+]
+```
+
+---
+
+### 2️⃣ **Építészek Lekérése**
+
+```
+GET /api/epiteszek
+```
+
+**Leírás**: Az összes építész adatai
+
+**Válasz**:
+```json
+[
+  {
+    "id": 1,
+    "nev": "Steindl Imre",
+    "szulev": 1839,
+    "stilus": "Neogótikus"
+  }
+]
+```
+
+---
+
+### 3️⃣ **Képek Listája**
+
+```
+GET /api/images-list
+```
+
+**Leírás**: A `public/kepek/` mappában lévõ összes képfájl
+
+**Válasz**:
+```json
+[
+  "building-1-1740123456789.jpg",
+  "building-2-1740123456790.jpg"
+]
+```
+
+---
+
+### 4️⃣ **Új Építész Hozzáadása**
+
+```
+POST /api/epiteszek
+Content-Type: application/json
+```
+
+**Request Body**:
+```json
+{
+  "nev": "Lechner Ödön",
+  "szulev": 1845,
+  "stilus": "Szecesszió",
+  "varos": "Budapest",
+  "epulet_nev": "Iparművészeti Múzeum"
+}
+```
+
+**Válasz** (Siker - 200):
+```json
+{
+  "message": "Építész és épület sikeresen hozzáadva!",
+  "epiteszId": 3,
+  "epuletId": 3
+}
+```
+
+**Válasz** (Hiba - 400):
+```json
+{
+  "message": "A név, stílus, város és épületnév megadása kötelező!"
+}
+```
+
+---
+
+### 5️⃣ **Kép Feltöltése**
+
+```
+POST /api/upload
+Content-Type: multipart/form-data
+```
+
+**Form Data**:
+- `kep` (file) - A képfájl
+
+**Válasz** (Siker - 200):
+```json
+{
+  "message": "Kép sikeresen feltöltve!",
+  "filename": "building-1-1740123456789.jpg"
+}
+```
+
+**Megkötések**:
+- Max méret: **5 MB**
+- Támogatott formátumok: **JPG, JPEG, PNG, GIF, WebP**
+
+---
+
+### 6️⃣ **Épület Módosítása**
+
+```
+PUT /api/epuletek/:id
+Content-Type: application/json
+```
+
+**Request Body**:
+```json
+{
+  "nev": "Országház - Módosított",
+  "varos": "Budapest",
+  "epult": 1904
+}
+```
+
+**Válasz** (Siker - 200):
+```json
+{
+  "message": "Épület sikeresen frissítve!"
+}
+```
+
+---
+
+### 7️⃣ **Kép URL Hozzárendelése Épülethez**
+
+```
+PUT /api/epuletek/:id/kep
+Content-Type: application/json
+```
+
+**Request Body**:
+```json
+{
+  "kep_url": "kepek/building-1-1740123456789.jpg"
+}
+```
+
+**Válasz** (Siker - 200):
+```json
+{
+  "message": "Kép sikeresen hozzárendelve!"
+}
+```
+
+---
+
+### 8️⃣ **Kép Törlése**
+
+```
+DELETE /api/kepek/:filename
+```
+
+**Válasz** (Siker - 200):
+```json
+{
+  "message": "Kép sikeresen törölve!"
+}
+```
+
+---
+
+## 🗄️ Adatbázis Queries
+
+### Az alkalmazás által használt fő SQL lekérdezések
+
+#### Épületek lekérése építészekkel JOIN-nel
+```sql
+SELECT epulet.*, epitesz.nev AS epitesz_neve, epitesz.id AS epitesz_id
+FROM epulet 
+LEFT JOIN kapcsolat ON epulet.id = kapcsolat.epulet_id 
+LEFT JOIN epitesz ON kapcsolat.epitesz_id = epitesz.id
+```
+
+#### Új építész és épület hozzáadása (tranzakció)
+```sql
+INSERT INTO epitesz (nev, szulev, stilus) VALUES (?, ?, ?)
+INSERT INTO epulet (nev, varos) VALUES (?, ?)
+INSERT INTO kapcsolat (epulet_id, epitesz_id) VALUES (?, ?)
+```
+
+#### Érült módosítása
+```sql
+UPDATE epulet SET nev=?, varos=?, epult=? WHERE id=?
+UPDATE epulet SET kep_url=? WHERE id=?
+```
+
+---
+
+## 🔒 Biztonság és Validáció
+
+### Input Validáció
+```javascript
+// Kötelező mezők ellenőrzése
+if (!nev || !stilus || !varos || !epulet_nev) {
+    return res.status(400).json({ message: '...' });
+}
+```
+
+### Fájlszűrés
+```javascript
+// Csak képfájlok
+const fileFilter = (req, file, cb) => {
+    if (/\.(jpg|jpeg|png|gif|webp)$/i.test(file.originalname)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Csak képfájlok engedélyezve!'), false);
+    }
+};
+```
+
+### CORS Engedélyezés
+```javascript
+app.use(cors());  // Böngészőbeli kérések engedélyezése
+```
+
+---
+
+## 📊 Képfeltöltés Folyamata
+
+```
+1. Frontend form
+   ↓
+2. Multer File Filter (JPG/PNG/GIF/WebP?)
+   ↓
+3. Fájl mentése: backend/public/kepek/
+   ↓
+4. Egyedi név: [original-name]-[timestamp]-[random].ext
+   ↓
+5. Response: { filename: "..." }
+   ↓
+6. Frontend: Kép URL hozzárendelése az épülethez (PUT /epuletek/:id/kep)
+   ↓
+7. Adatbázis frissítés: kep_url = "kepek/filename"
+```
+
+---
+
+## 🐛 Hibakezelés
+
+Összes endpoint error handling-gel rendelkezik:
+
+```javascript
+try {
+    const [rows] = await db.query(...);
+    res.json(rows);
+} catch (err) {
+    res.status(500).json({ 
+        message: 'Hiba a műveletnél', 
+        error: err.message 
+    });
+}
+```
+
+---
+
+## 💡 Fejlesztői Tippek
+
+### 1. MySQL Kapcsolat Tesztelése
+```bash
+mysql -u root -p -e "SELECT * FROM epiteszet.epulet;"
+```
+
+### 2. API Végpontok Tesztelése
+```bash
+# GET - Épületek listája
+curl http://localhost:3333/api/epuletek
+
+# POST - Új építész
+curl -X POST http://localhost:3333/api/epiteszek \
+  -H "Content-Type: application/json" \
+  -d '{"nev":"Test","stilus":"Modern"}'
+```
+
+### 3. Képek Megtekintése
+```
+http://localhost:3333/kepek/[filename]
+```
+
+### 4. Nodemon Fejlesztési Mód
+```bash
+npx nodemon server.js
+# Szerver automatikusan újraindul a fájl módosításakor
+```
+
+---
+
+## 📝 Megjegyzések
+
+- Az API Promise-alapú adatbázis query-ket használ (`async/await`)
+- Minden endpoint JSON-t ad vissza
+- Képek statikus fájlok, `/kepek` route-on keresztül érhetőek el
+- Az adatbázis kapcsolat connection pool-t használ teljesítmény miatt
+
+---
+
+## 🚧 Lehetséges Fejlesztések
+
+- [ ] Authentikáció (Login/Register)
+- [ ] Paginálás a nagy adatbázisokhoz
+- [ ] Képek tömörítése feltöltéskor
+- [ ] Képek cache-elése
+- [ ] Részletes logging
+- [ ] Unit tesztek (Jest/Mocha)
+
+---
+
+## 🎓 Tanulási Célok
+
+✅ Express.js REST API fejlesztés  
+✅ MySQL adatbázis kezelés  
+✅ Fájlfeltöltés és Storage kezelés (Multer)  
+✅ Error handling és validáció  
+✅ CORS kezelés  
+
