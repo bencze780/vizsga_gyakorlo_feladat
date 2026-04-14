@@ -158,6 +158,9 @@ Content-Type: application/json
   "epuletId": 3
 }
 ```
+**Megjegyzés**: Ez a végpont egyszerre hoz létre egy építészt és egy hozzá kapcsolódó épületet. A "Single Responsibility Principle" (egy felelősség elve) szigorúbb követése érdekében megfontolható lenne két külön végpont létrehozása: egy az építésznek (`POST /api/epiteszek`) és egy az épületnek (`POST /api/epuletek`), majd egy külön logikával összekapcsolni őket. A jelenlegi megoldás egyszerűsége miatt azonban praktikus lehet.
+
+---
 
 **Válasz** (Hiba - 400):
 ```json
@@ -274,7 +277,7 @@ INSERT INTO epulet (nev, varos) VALUES (?, ?)
 INSERT INTO kapcsolat (epulet_id, epitesz_id) VALUES (?, ?)
 ```
 
-#### Érült módosítása
+#### Épület módosítása
 ```sql
 UPDATE epulet SET nev=?, varos=?, epult=? WHERE id=?
 UPDATE epulet SET kep_url=? WHERE id=?
@@ -294,12 +297,15 @@ if (!nev || !stilus || !varos || !epulet_nev) {
 
 ### Fájlszűrés
 ```javascript
-// Csak képfájlok
+// Csak képfájlok (MIME típus és kiterjesztés alapján)
 const fileFilter = (req, file, cb) => {
-    if (/\.(jpg|jpeg|png|gif|webp)$/i.test(file.originalname)) {
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedExtensions = /\.(jpg|jpeg|png|gif|webp)$/i;
+
+    if (allowedMimeTypes.includes(file.mimetype) && allowedExtensions.test(file.originalname)) {
         cb(null, true);
     } else {
-        cb(new Error('Csak képfájlok engedélyezve!'), false);
+        cb(new Error('Csak képfájlok (JPG, PNG, GIF, WebP) engedélyezettek!'), false);
     }
 };
 ```
