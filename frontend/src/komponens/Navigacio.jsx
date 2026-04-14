@@ -1,75 +1,55 @@
 import React from 'react';
-import { Navbar, Container, Nav } from 'react-bootstrap';
+import { Nav } from 'react-bootstrap';
 
 /**
  * ───────────────────────────────────────────────────────────────
  * NAVIGÁCIÓ KOMPONENS
  * 
- * Felső navigációs sáv (navbar) a nézetek közötti navigáláshoz
+ * Oldalsó navigációs sáv a nézetek közötti navigáláshoz
  * Aktív nézet kiemeléséhez
  * ───────────────────────────────────────────────────────────────
  */
 const Navigacio = ({ aktualisNezet, setNezet }) => {
   return (
-    <Navbar bg="dark" expand="lg" sticky="top" className="navbar">
-      <Container fluid>
-        {/* Logo - kattintás a kezdőlapra */}
-        <Navbar.Brand 
-          className="brand"
-          onClick={() => setNezet('home')} 
-          style={{ cursor: 'pointer' }}
-        >
-          🏗️ ÉpítészArchívum
-        </Navbar.Brand>
+    <nav className="sidebar bg-dark text-white p-3">
+      {/* Logo - kattintás a kezdőlapra */}
+      <div
+        className="brand p-3"
+        onClick={() => setNezet('home')}
+        style={{ cursor: 'pointer', fontSize: '1.25rem', fontWeight: 'bold' }}
+      >
+        🏗️ ÉpítészArchívum
+      </div>
 
-        {/* Toggle gomb mobil nézeténél */}
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto">
-            {/* Kezdőlap */}
-            <Nav.Link 
-              className={aktualisNezet === 'home' ? 'active' : ''} 
-              onClick={() => setNezet('home')}
-            >
-              Kezdőlap
-            </Nav.Link>
+      <hr />
 
-            {/* Épületek lista */}
-            <Nav.Link 
-              className={aktualisNezet === 'list' ? 'active' : ''} 
-              onClick={() => setNezet('list')}
-            >
-              Épületek
-            </Nav.Link>
+      <Nav variant="pills" activeKey={aktualisNezet} onSelect={(key) => setNezet(key)} className="flex-column">
+        {/* Kezdőlap */}
+        <Nav.Item>
+          <Nav.Link eventKey="home">Kezdőlap</Nav.Link>
+        </Nav.Item>
 
-            {/* Új építész */}
-            <Nav.Link 
-              className={aktualisNezet === 'add-architect' ? 'active' : ''} 
-              onClick={() => setNezet('add-architect')}
-            >
-              Új Építész
-            </Nav.Link>
+        {/* Épületek lista */}
+        <Nav.Item>
+          <Nav.Link eventKey="list">Épületek</Nav.Link>
+        </Nav.Item>
 
-            {/* Kép kezelése */}
-            <Nav.Link 
-              className={aktualisNezet === 'add-image' ? 'active' : ''} 
-              onClick={() => setNezet('add-image')}
-            >
-              Kép Kezelése
-            </Nav.Link>
+        {/* Új építész */}
+        <Nav.Item>
+          <Nav.Link eventKey="add-architect">Új Építész</Nav.Link>
+        </Nav.Item>
 
-            {/* Tesztek futtatása */}
-            <Nav.Link 
-              className={aktualisNezet === 'test-runner' ? 'active' : ''} 
-              onClick={() => setNezet('test-runner')}
-            >
-              🧪 Tesztek
-            </Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+        {/* Kép kezelése */}
+        <Nav.Item>
+          <Nav.Link eventKey="add-image">Kép Kezelése</Nav.Link>
+        </Nav.Item>
+
+        {/* Tesztek futtatása */}
+        <Nav.Item>
+          <Nav.Link eventKey="test-runner">Tesztek</Nav.Link>
+        </Nav.Item>
+      </Nav>
+    </nav>
   );
 };
 
