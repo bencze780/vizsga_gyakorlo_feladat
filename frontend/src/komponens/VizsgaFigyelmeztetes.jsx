@@ -84,6 +84,13 @@ const VizsgaFigyelmeztetes = () => {
             >
               ⚛️ Frontend
             </Button>
+            <Button 
+              variant={activeTab === 'teszteles' ? 'danger' : 'outline-danger'}
+              size="sm"
+              onClick={() => setActiveTab('teszteles')}
+            >
+              🧪 Tesztelés
+            </Button>
           </div>
 
           {/* PROJEKT TAB */}
@@ -254,6 +261,47 @@ cd frontend && npm install && npm run dev`}</code></pre>
               <div className="alert alert-warning small py-2 mb-0">
                 <strong>CORS hiba (Fetch failed):</strong> Győződj meg róla, hogy a backend szerver fut-e (alap: port 3333).<br/>
                 <strong>Kép nem jelenik meg:</strong> Az <code>&lt;img src="..."&gt;</code> útvonalnak a backend publikus <code>/kepek/</code> mappájára kell mutatnia.
+              </div>
+            </div>
+          )}
+
+          {/* TESZTELÉS TAB */}
+          {activeTab === 'teszteles' && (
+            <div className="animate__animated animate__fadeIn">
+              <h4 className="text-danger border-bottom pb-2 mb-3">🧪 Szoftvertesztelés - Tananyag</h4>
+              <p>A minőségi szoftverfejlesztés elengedhetetlen része az automata tesztelés. Az alábbiakban a projektben is használt (Jest és Supertest) 4 fő tesztelési szintet és módszertant mutatjuk be.</p>
+
+              <div className="card shadow-sm border-0 bg-light mb-3">
+                <div className="card-body py-2">
+                  <h6 className="card-title text-danger fw-bold mb-1">1. Egyszerű Teszt (Sum)</h6>
+                  <p className="card-text small mb-0">A legalapvetőbb forma, gyakran <i>Sanity check</i>-nek is hívják. Szimpla matematikai vagy logikai műveleteket vizsgál (pl. 1 + 2 = 3). Legfőbb célja annak bizonyítása, hogy a tesztkörnyezet (pl. a Jest keretrendszer) megfelelően van konfigurálva és futtatható, mielőtt a bonyolultabb tesztekre térnénk.</p>
+                </div>
+              </div>
+
+              <div className="card shadow-sm border-0 bg-light mb-3">
+                <div className="card-body py-2">
+                  <h6 className="card-title text-danger fw-bold mb-1">2. Unit (Egység) Tesztek</h6>
+                  <p className="card-text small mb-0">A kód legkisebb, önállóan futtatható és jól elkülöníthető részleteit (például egyetlen függvényt, adat-validátort vagy osztály metódust) vizsgálják. Mivel <strong>nem használnak külső függőségeket</strong> (nincs hálózati, fájlrendszeri vagy adatbázis hívás), rendkívül gyorsan lefutnak. Segítenek az üzleti logika és a határeredmények korai ellenőrzésében.</p>
+                </div>
+              </div>
+
+              <div className="card shadow-sm border-0 bg-light mb-3">
+                <div className="card-body py-2">
+                  <h6 className="card-title text-danger fw-bold mb-1">3. Integrációs Tesztek</h6>
+                  <p className="card-text small mb-0">Itt azt ellenőrizzük, hogy a különböző önálló egységek (modulok) megfelelően működnek-e együtt. Például a projektünkben a <code>Supertest</code> segítségével valódi HTTP kéréseket (GET, POST) szimulálunk, amelyek az Express backend-en keresztül elérik és lekérdezik a valódi MySQL adatbázist. Ezek a tesztek már több másodpercig is eltarthatnak és futó környezetet igényelnek.</p>
+                </div>
+              </div>
+
+              <div className="card shadow-sm border-0 bg-light mb-3">
+                <div className="card-body py-2">
+                  <h6 className="card-title text-danger fw-bold mb-1">4. Mockolt (Hamisított) Tesztek (Haladó)</h6>
+                  <p className="card-text small mb-0">Ezek olyan tesztek, ahol egy külső rendszert (például az adatbázis kapcsolatot) "hamisítjuk" egy beépített függvénnyel (pl. <code>jest.mock()</code>). A kód futása során az alkalmazás azt hiszi, hogy a valós MySQL szerverrel kommunikál, de csak egy általunk vezérelt virtuális választ kap. <strong>Nagy előnye:</strong> Futó adatbázis nélkül is működik, extrém gyors, és garantáltan nem módosítja a valós rendszer adatait tesztelés közben.</p>
+                </div>
+              </div>
+
+              <h5 className="mt-4 text-secondary">💡 Jó tudni a vizsgára</h5>
+              <div className="alert alert-danger small py-2 mb-0">
+                A backend API végpontok tesztelése nagyon gyakori feladat lehet! Érdemes átnézni a <code>.test.js</code> fájlokat, hogy lásd, hogyan épül fel logikailag a <code>describe()</code> (tesztcsomag) – <code>it()</code> (konkrét teszteset) – <code>expect()</code> (elvárt eredmény) láncolat.
               </div>
             </div>
           )}
