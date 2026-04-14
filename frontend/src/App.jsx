@@ -9,6 +9,7 @@ import EpuletLista from './komponens/EpuletLista';
 import KepHozzaadasa from './komponens/KepHozzaadasa';
 import VizsgaFigyelmeztetes from './komponens/VizsgaFigyelmeztetes';
 import TestRunner from './komponens/TestRunner';
+import FelhasznaltIrodalom from './komponens/FelhasznaltIrodalom';
 
 const API_URL = 'http://localhost:3333/api';
 
@@ -345,6 +346,11 @@ function App() {
           {/* NÉZET 5: Teszt Futtató */}
           {view === 'test-runner' && (
             <TestRunner apiUrl={API_URL} />
+          )}
+
+          {/* NÉZET 6: Források / Felhasznált Irodalom */}
+          {view === 'irodalom' && (
+            <FelhasznaltIrodalom />
           )}
         </Container>
 

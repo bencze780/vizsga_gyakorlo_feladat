@@ -48,6 +48,11 @@ const Navigacio = ({ aktualisNezet, setNezet }) => {
         <Nav.Item>
           <Nav.Link eventKey="test-runner">Tesztek</Nav.Link>
         </Nav.Item>
+
+        {/* Felhasznált irodalom és források */}
+        <Nav.Item>
+          <Nav.Link eventKey="irodalom">Források</Nav.Link>
+        </Nav.Item>
       </Nav>
     </nav>
   );

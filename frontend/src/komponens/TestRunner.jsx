@@ -62,6 +62,23 @@ const TestRunner = ({ apiUrl }) => {
                             </ul>
                         </Accordion.Body>
                     </Accordion.Item>
+                    <Accordion.Item eventKey="1">
+                        <Accordion.Header>🛠️ Szükséges modulok és telepítésük</Accordion.Header>
+                        <Accordion.Body>
+                            <p className="mb-2">A tesztek futtatásához a <strong>backend</strong> projektben az alábbi tesztelő csomagokra van szükség:</p>
+                            <ul className="mb-3" style={{ lineHeight: '1.8' }}>
+                                <li><strong>Jest</strong>: Egy teljes körű JavaScript tesztelő keretrendszer, ő biztosítja az alapvető függvényeket (<code>describe</code>, <code>it</code>/<code>test</code>, <code>expect</code>).</li>
+                                <li><strong>Supertest</strong>: Kifejezetten Express/Node.js HTTP szerverek (API végpontok) tesztelésére használt könyvtár.</li>
+                            </ul>
+                            <p className="mb-1"><strong>Telepítési parancs (a <code>backend</code> mappában, a terminálban kiadva):</strong></p>
+                            <pre className="bg-dark text-light p-2 rounded mb-3">
+                                <code>npm install --save-dev jest supertest</code>
+                            </pre>
+                            <p className="mb-0 text-muted small">
+                                <em>Tipp: Érdemes a backend <code>package.json</code> fájljában a <code>"scripts"</code> részhez hozzáadni a futtató parancsot (pl. <code>"test": "jest"</code>), ahogy a fenti gombok is használják a háttérben.</em>
+                            </p>
+                        </Accordion.Body>
+                    </Accordion.Item>
                 </Accordion>
 
                 <p className="text-muted mb-3">Kattints egy gombra az adott tesztcsomag futtatásához a szerveren:</p>
