@@ -8,6 +8,7 @@ import EpiteszHozzaadasa from './komponens/EpiteszHozzaadasa';
 import EpuletLista from './komponens/EpuletLista';
 import KepHozzaadasa from './komponens/KepHozzaadasa';
 import VizsgaFigyelmeztetes from './komponens/VizsgaFigyelmeztetes';
+import TestRunner from './komponens/TestRunner';
 
 const API_URL = 'http://localhost:3333/api';
 
@@ -171,6 +172,21 @@ function App() {
                     <p style={{ fontSize: '0.9rem', marginBottom: 0 }}>Hozzáadása az archívumhoz</p>
                   </div>
                 </div>
+
+                {/* Teszt futtató */}
+                <div 
+                  className="card menu-card shadow-sm"
+                  onClick={() => setView('test-runner')}
+                  style={{ cursor: 'pointer', transition: 'transform 0.2s', background: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-8px)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                  <div className="card-body" style={{ textAlign: 'center', color: '#fff', minHeight: '150px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '12px' }}>🧪</div>
+                    <h4 style={{ marginBottom: '8px' }}>Tesztek Futtatása</h4>
+                    <p style={{ fontSize: '0.9rem', marginBottom: 0 }}>API és Unit tesztek</p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -323,6 +339,11 @@ function App() {
             onHiba={(m) => notify(m, 'error')}
             frissites={fetchData}
           />
+        )}
+
+        {/* NÉZET 5: Teszt Futtató */}
+        {view === 'test-runner' && (
+          <TestRunner apiUrl={API_URL} />
         )}
       </Container>
 

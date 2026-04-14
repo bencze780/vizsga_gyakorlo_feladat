@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "nodemon server.js",
+    "test": "jest",
+    "test:sum": "jest sum.test.js",
+    "test:unit": "jest unit.test.js",
+    "test:integration": "jest integration.test.js",
+    "test:mock": "jest mock-integration.test.js"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +20,9 @@
     "multer": "^2.1.1",
     "mysql2": "^3.20.0",
     "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.2.2"
   }
 }

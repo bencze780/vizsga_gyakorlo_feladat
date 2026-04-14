@@ -9,7 +9,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
-
+const { exec } = require('child_process');
 const app = express();
 
 // ═════════════════════════════════════════════════════════════════
@@ -74,6 +74,29 @@ const db = mysql.createPool({
 // ═════════════════════════════════════════════════════════════════
 // API VÉGPONTOK
 // ═════════════════════════════════════════════════════════════════
+
+// 2. Ezt pedig a végpontok (route-ok) közé:
+app.post('/api/run-tests', (req, res) => {
+    const { type } = req.body;
+    let command = 'npm test'; // Alapértelmezett: összes teszt
+
+    if (type === 'sum') command = 'npm run test:sum';
+    if (type === 'unit') command = 'npm run test:unit';
+    if (type === 'integration') command = 'npm run test:integration';
+    if (type === 'mock') command = 'npm run test:mock';
+
+    // Parancs futtatása (a cwd mondja meg, hogy a backend mappában fusson le)
+    exec(command, { cwd: __dirname, maxBuffer: 1024 * 1024 * 5 }, (error, stdout, stderr) => {
+        // A Jest sokszor a stderr-be írja a sikeres tesztek eredményét is
+        const combinedOutput = stdout + '\n' + stderr;
+        
+        res.json({
+            success: !error,
+            output: combinedOutput
+        });
+    });
+});
+
 
 /**
  * GET /api/epuletek
@@ -266,7 +289,12 @@ app.delete('/api/epuletek/:id', async (req, res) => {
 // SZERVER INDÍTÁSA
 // ═════════════════════════════════════════════════════════════════
 
-app.listen(3333, () => {
-    console.log('🚀 Server fut a http://localhost:3333 címen');
-    console.log('📁 Képek kiszolgálása: /kepek');
-});
+// Csak akkor indítjuk el a szervert a porton, ha a fájlt közvetlenül futtatják (nem tesztből hívják)
+if (require.main === module) {
+    app.listen(3333, () => {
+        console.log('🚀 Server fut a http://localhost:3333 címen');
+        console.log('📁 Képek kiszolgálása: /kepek');
+    });
+}
+
+module.exports = app;

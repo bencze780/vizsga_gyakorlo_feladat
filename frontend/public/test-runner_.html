@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teszt Futtató Központ</title>
+    <style>
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f0f2f5; 
+            color: #333;
+        }
+        .card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 6px rgba(49, 47, 47, 0.1); 
+        }
+        .buttons { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 25px; 
+            flex-wrap: wrap;
+        }
+        button { 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 6px; 
+            background: #007bff; 
+            color: white; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #a5c8ed; cursor: not-allowed; }
+        
+        /* Terminál stílusú kimenet */
+        pre { 
+            background: #1e1e1e; 
+            color: #d4d4d4; 
+            padding: 20px; 
+            border-radius: 8px; 
+            overflow-x: auto; 
+            min-height: 300px; 
+            white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Webes Teszt Futtató</h1>
+        <p>Kattints egy gombra a backend tesztek futtatásához. A folyamat eltarthat néhány másodpercig.</p>
+
+        <div class="buttons">
+            <button onclick="runTest('sum')"> Egyszerű Teszt (Sum)</button>
+            <button onclick="runTest('unit')"> Unit Tesztek</button>
+            <button onclick="runTest('integration')"> Integrációs Tesztek</button>
+            <button onclick="runTest('mock')" style="background: #ffc107; color: #212529;">Mockolt Tesztek</button>
+            <button onclick="runTest('all')" style="background: #28a745;"> Összes Teszt Futtatása</button>
+        </div>
+
+        <pre id="output">Kattints egy fenti gombra a tesztelés megkezdéséhez...</pre>
+    </div>
+
+    <script>
+        async function runTest(type) {
+            const outputEl = document.getElementById('output');
+            const buttons = document.querySelectorAll('button');
+
+            outputEl.innerHTML = 'Futtatás folyamatban... Kérlek várj! \n(Az integrációs tesztek akár 5-10 másodpercet is igénybe vehetnek)';
+            buttons.forEach(b => b.disabled = true);
+
+            try {
+                // A backend URL-je (ha a backend portja más, írd át a 3001-et)
+                const response = await fetch('http://localhost:3333/api/run-tests', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type })
+                });
+
+                // Ellenőrizzük, hogy a válasz valóban JSON-e, mielőtt megpróbáljuk parse-olni
+                const contentType = response.headers.get("content-type");
+                if (!response.ok || !contentType || !contentType.includes("application/json")) {
+                    const text = await response.text();
+                    throw new Error(`A szerver nem megfelelő formátumban (nem JSON) vagy hibával válaszolt.\nStátuszkód: ${response.status}\n\nLehet, hogy nem indítottad újra a backend szervert a server.js módosítása után?\n\nRészletek:\n${text.substring(0, 150)}...`);
+                }
+
+                const data = await response.json();
+                // A Jest a kimenetét gyakran a stderr-be írja, így mindkettőt megjelenítjük
+                outputEl.textContent = data.output || 'Nincs megjeleníthető kimenet.';
+            } catch (error) {
+                outputEl.textContent = ' Hiba történt a szerverhez való kapcsolódáskor:\n' + error.message + '\n\nEllenőrizd, hogy a backend szerver fut-e!';
+            } finally {
+                buttons.forEach(b => b.disabled = false);
+            }
+        }
+    </script>
+</body>
+</html>

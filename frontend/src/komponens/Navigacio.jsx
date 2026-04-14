@@ -58,6 +58,14 @@ const Navigacio = ({ aktualisNezet, setNezet }) => {
             >
               Kép Kezelése
             </Nav.Link>
+
+            {/* Tesztek futtatása */}
+            <Nav.Link 
+              className={aktualisNezet === 'test-runner' ? 'active' : ''} 
+              onClick={() => setNezet('test-runner')}
+            >
+              🧪 Tesztek
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
