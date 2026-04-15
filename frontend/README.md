@@ -58,6 +58,8 @@ frontend/
 │       ├── EpiteszHozzaadasa.jsx   # Építész hozzáadás form
 │       ├── KepHozzaadasa.jsx       # Kép feltöltés form
 │       ├── KepFeltoltes.jsx        # Kép feltöltés UI
+│       ├── FelhasznaltIrodalom.jsx # Felhasznált irodalom/források
+│       ├── TestRunner.jsx          # Teszt futtatási komponens
 │       └── VizsgaFigyelmeztetes.jsx # Vizsgafelkészültség banner
 ├── index.html                      # HTML fõ sablon
 ├── package.json                    # Függőségek és scripts
@@ -108,8 +110,8 @@ import { EpuletLista } from './komponens/EpuletLista';
 - 📊 **Táblázat megjelenítés** - Épületre adatok strukturált táblában
 - ✏️ **Szerkesztés** - Épület adatainak  módosítása (inline editing)
 - 🖼️ **Képek kezelése** - Kép feltöltés és hozzárendelés épülethez
-- 🗑️ **Kép törlés** - Tárolt képek eltávolítása
-- 📱 **Adatok frissítés** - Automatikus page reload sikeres módosítás után
+- 🗑️ **Kép eltávolítása** - Kép hozzárendelésének törlése az épületről (URL nullázása az adatbázisban)
+-  **Adatok frissítés** - Automatikus page reload sikeres módosítás után
 
 ---
 
@@ -256,8 +258,15 @@ const res = await fetch(`${apiUrl}/epuletek/${epuletId}`, {
   body: JSON.stringify(szerkesztesAdatok)
 });
 
-// Kép törlése
-const res = await fetch(`${apiUrl}/kepek/${filename}`, {
+// Kép URL és építési év hozzárendelése
+const res = await fetch(`${apiUrl}/epuletek/${epuletId}/kep`, {
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ kep_url: '/kepek/ujkep.jpg', epult: 1904 })
+});
+
+// Kép eltávolítása az épületről (URL nullázása)
+const res = await fetch(`${apiUrl}/epuletek/${epuletId}`, {
   method: 'DELETE'
 });
 ```

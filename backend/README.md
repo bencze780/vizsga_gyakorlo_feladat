@@ -2,7 +2,6 @@
 
 Express.js szerver a ÉpítészArchívum alkalmazáshoz. Kezeli az adatbázis műveleti és képfeltöltéseket.
 
----
 
 ## 📦 Technológiák
 
@@ -35,6 +34,26 @@ npm start
 
 ```bash
 npx nodemon server.js
+```
+
+---
+
+## 📁 Projekt Szerkezete
+
+```
+backend/
+├── server.js                       # Express szerver és API végpontok
+├── sum.js                          # Segédfüggvény/utility modul
+├── sum.test.js                     # Unit tesztek (sum.js-hez)
+├── unit.test.js                    # Egyéb unit tesztek
+├── integration.test.js             # Integrációs tesztek
+├── mock-integration.test.js        # Mock adatokkal futó integrációs tesztek
+├── package.json                    # Függőségek és scripts
+├── package-lock.json               # Lezárt verziók
+├── public/                         # Statikus fájlok
+│   └── kepek/                      # Feltöltött képek
+├── node_modules/                   # Telepített csomagok
+└── README.md                       # Ez a fájl
 ```
 
 ---
@@ -364,7 +383,7 @@ curl http://localhost:3333/api/epuletek
 # POST - Új építész
 curl -X POST http://localhost:3333/api/epiteszek \
   -H "Content-Type: application/json" \
-  -d '{"nev":"Test","stilus":"Modern"}'
+  -d '{"nev":"Test","stilus":"Modern","varos":"Tesztváros","epulet_nev":"Tesztépület"}'
 ```
 
 ### 3. Képek Megtekintése
